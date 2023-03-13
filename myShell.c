@@ -3,10 +3,12 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "helpers.h"
+//====================================Prototypes
 void help(char** arr, int i);
 int runBuiltIn(char** arr, int i);
 int cd(char** arr, int i);
 void pwd();
+//==================================
 int main(int argc, char* argv[]){
 
 	char _line[1024];
@@ -50,6 +52,7 @@ int main(int argc, char* argv[]){
 
 	return 0;
 }
+//=====================================Functions
 int runBuiltIn(char** arr, int i){
 	if(strcmp(arr[0], "exit") == 0){
 		exit(0);
@@ -60,7 +63,7 @@ int runBuiltIn(char** arr, int i){
 		pwd();
 		return(0);
 	}else if(strcmp(arr[0], "cd") == 0){
-		puts("cd");
+		cd(arr, i);
 		return(0);
 	}else if(strcmp(arr[0], "wait") == 0){
 		puts("You're gonna be waiting a long time for that one..");
@@ -93,7 +96,14 @@ int cd(char** arr, int i){
 	if(i == 1){
 		return(0);	//cd was only argument, do nothing
 	}
-
+	char cwd[1024];
+	getcwd(cwd, 1024);
+	printf("%s\n", cwd);
+	if(chdir(arr[1]) == -1){
+		perror("chdir in myShell");
+	}
+	getcwd(cwd, 1024);
+	printf("%s\n", cwd);
 
 	return(1);
 
