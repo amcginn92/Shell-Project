@@ -3,11 +3,14 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "helpers.h"
-
+void help(char** arr, int i);
+int runBuiltIn(char** arr, int i);
+int cd(char** arr, int i);
+void pwd();
 int main(int argc, char* argv[]){
 
 	char _line[1024];
-	char** array = NULL;
+	char** arr = NULL;
 	char* line = NULL;
 	//continue taking input from user until exit is given
 	int j = 1;
@@ -16,30 +19,84 @@ int main(int argc, char* argv[]){
 		fgets(_line,1024, stdin);
 
 		line = strdup(_line);	//We create a copy so parse doesn't change our arguments
-		array = parse(line," \n");
+		arr = parse(line," \n");
 
-		if (array==NULL)
+		if (arr==NULL)
 			exit(1);
 
 		int i = 0;
-		while (array[i]!=NULL){
-			printf("%s\n",array[i++]);
+		while (arr[i]!=NULL){
+//			printf("arr[%d]: ", i);
+//			printf("%s\n", arr[i++]);
+			i++;
 		}
-		
+//		printf("%d\n", i);
 
-		free(array);
+		if(i > 2){	//we should not have more than 2 arguments
+			printf("Too many arguments for now\n");
+			exit(1);
+		}
+
+		runBuiltIn(arr, i);
+
+
+		free(arr);
 		free(line);
 
-//		if(strcmp(_line, "exit") == 0){
-//			return(0);
-//		}else if(strcmp(_line, "help") == 0){
-//
-//		}
+
 	}
 
 
 
 	return 0;
+}
+int runBuiltIn(char** arr, int i){
+	if(strcmp(arr[0], "exit") == 0){
+		exit(0);
+	}else if(strcmp(arr[0], "help") == 0){
+		help(arr,i);
+		return(0);
+	}else if(strcmp(arr[0], "pwd") == 0){
+		pwd();
+		return(0);
+	}else if(strcmp(arr[0], "cd") == 0){
+		puts("cd");
+		return(0);
+	}else if(strcmp(arr[0], "wait") == 0){
+		puts("You're gonna be waiting a long time for that one..");
+		return(0);
+	}
+	return(1);
+}
+
+void help(char** arr, int i){
+	if(i == 1){
+		helpShell();
+	}else if(strcmp(arr[1], "exit") == 0){
+		helpExit();
+	}else if(strcmp(arr[1], "help") == 0){
+		helpMan();
+	}else if(strcmp(arr[1], "pwd") == 0){
+		helpPwd();
+	}else if(strcmp(arr[1], "cd") == 0){
+		helpCd();
+	}else if(strcmp(arr[1], "wait") == 0){
+		puts("Not just yet..");
+		//implement helpWait()
+	}
+}
+void pwd(){
+	char arr[1024];
+	printf("%s\n", getcwd(arr,1024));
+}
+int cd(char** arr, int i){
+	if(i == 1){
+		return(0);	//cd was only argument, do nothing
+	}
+
+
+	return(1);
+
 }
 
 

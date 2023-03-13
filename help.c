@@ -9,16 +9,17 @@ void helpMan(){
     puts("NAME");
     puts("\thelp - interfaces to the myShell user manuals.\n\n");
     puts("DESCRIPTION");
-    puts("\thelp allows a user to find manuals for myShell, as well as find information for the multitude of command line actions that it implements");
+    puts("\thelp allows a user to find manuals for myShell, as well as find information for the "
+         "\n\tmultitude of command line actions that it implements\n");
 }
 void helpShell(){
     puts("myShell\n\n");
     puts("Custom Shell Implementation");
-    puts("\tmyShell is a custom implementation of a linux shell. It was developed by a huge nerd\n\n");
+    puts("\tmyShell is a custom implementation of a linux shell. It was developed by a huge nerd...\n\n");
     puts("DESCRIPTION");
     puts("\tmyShell allows users to navigate a file system, request current position, request manuals "
          "\n\tfor features, and exit from the current instance using built in commands."
-         "\n\tIt also allows program execution, redirection, and the ability to run programs in the background.");
+         "\n\tIt also allows program execution, redirection, and the ability to run programs in the background.\n");
 }
 void helpExit(){
         puts("EXIT(1)\n\n");
