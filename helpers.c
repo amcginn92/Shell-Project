@@ -38,7 +38,7 @@ char** parse(char* line,char* delim){
 
         return array;
 }
-/*Returns index of first instance of char * special*/
+/*Returns index of first instance of char* special*/
 int find_special (char*args[], char * special){
 
         int i = 0;

@@ -8,6 +8,7 @@ void help(char** arr, int i);
 int runBuiltIn(char** arr, int i);
 int cd(char** arr, int i);
 void pwd();
+int wait();
 //==================================
 int main(int argc, char* argv[]){
 	char cwd[4096];	//used to display cwd to user in prompt
@@ -38,8 +39,11 @@ int main(int argc, char* argv[]){
 			//if it is a '|' we will execute a function for piping
 			//we will do this in a while loop, continually checking for the next instance of a pipe
 			//pipe(char* file1, char** args1, char* file2, char** args2)
+
 			//if it is a '>' we will execute a function for redirection
 			//redirect(char* file1, char* file2, char dir) *dir stands for the direction
+
+			//if special character is a & we will run programExec without waitPid flag (to be added)
 			programExec(arr[0], arr);
 		}
 
@@ -107,6 +111,12 @@ int cd(char** arr, int i){
 
 	return(1);
 
+}
+//==========================================================Wait
+int wait(){
+	//waits until all processes have finished if 'wait' has been entered
+	//use a while loop, reading return values for wait
+	return(0);
 }
 
 

@@ -10,4 +10,6 @@ void helpExit();
 void helpPwd();
 void helpCd();
 int programExec(char* path, char* argv[]);
+int myPipe(char* file1, char** args1, char* file2, char** args2);
+int redirect(char* file1, char* file2, char dir);
 #endif
