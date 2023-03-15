@@ -21,6 +21,7 @@ int main(int argc, char* argv[]){
 		fgets(_line,1024, stdin);
 
 		line = strdup(_line);
+		//use 'parse' function given to use to parse the user input
 		arr = parse(line," \n");
 
 		if (arr==NULL){
@@ -28,36 +29,28 @@ int main(int argc, char* argv[]){
 		}
 		//get a count of arguments
 		int i = 0;
-		while (arr[i]!=NULL){
-//			printf("arr[%d]: ", i);
-//			printf("%s\n", arr[i++]);
-			i++;
+		while (arr[i]!=NULL){ i++; }
+
+		//determine if built-in, if yes run it, if not (returns 1) we exec program
+		if(runBuiltIn(arr, i)){
+			//before we execute the program we need to determine if there is a special character
+			//using 'find_special' we can get the first index of a special character
+			//if it is a '|' we will execute a function for piping
+			//we will do this in a while loop, continually checking for the next instance of a pipe
+			//pipe(char* file1, char** args1, char* file2, char** args2)
+			//if it is a '>' we will execute a function for redirection
+			//redirect(char* file1, char* file2, char dir) *dir stands for the direction
+			programExec(arr[0], arr);
 		}
-		//determine if input was a built in
-		if(i > 2){	//we should not have more than 2 arguments for built ins
-			printf("Too many arguments for now\n");
-			exit(1);
-		}
-		runBuiltIn(arr, i);
-
-		//if it is not a built-in, run program
-		//programExec();
-
-
 
 		free(arr);
 		free(line);
-
-
 	}
-
-
-
 	return 0;
 }
-//=====================================Functions
-
 //====================================================RUN BUILT INS
+/*runBuiltIn will determine if the input was a built in function. If not we execute
+ *a program instead. We return 1 if */
 int runBuiltIn(char** arr, int i){
 	if(strcmp(arr[0], "exit") == 0){
 		exit(0);

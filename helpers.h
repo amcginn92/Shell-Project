@@ -9,4 +9,5 @@ void helpShell();
 void helpExit();
 void helpPwd();
 void helpCd();
+int programExec(char* path, char* argv[]);
 #endif
