@@ -44,6 +44,7 @@ int main(int argc, char* argv[]){
 			//redirect(char* file1, char* file2, char dir) *dir stands for the direction
 
 			//if special character is a & we will run programExec without waitPid flag (to be added)
+//			printf("From Main: %s, %s\n", arr[0], arr[1]);
 			programExec(arr[0], arr);
 		}
 
