@@ -15,6 +15,7 @@ int main(int argc, char* argv[]){
 	char _line[1024]; //Input from user
 	char** arr = NULL;	//parsed input values separated into strings
 	char* line = NULL;
+	flags myFlags = {0};
 	//continue taking input from user until exit is given
 //	int j = 1;
 	while(1){
@@ -32,20 +33,37 @@ int main(int argc, char* argv[]){
 		int i = 0;
 		while (arr[i]!=NULL){ i++; }
 
-		//determine if built-in, if yes run it, if not (returns 1) we exec program
+		//determine if built-in, if yes run it, if not (returns 1) we exec the program
+		//**NEED TO VERIFY CORRECT NUMBER OF ARGUMENTS FOR BUILT INS**
 		if(runBuiltIn(arr, i)){
 			//before we execute the program we need to determine if there is a special character
 			//using 'find_special' we can get the first index of a special character
+
+//			Determine which special chars we have, if any
+			which_special(arr, &myFlags);
+//			printf("Character: %c\n", which);
+
+			//PIPES
 			//if it is a '|' we will execute a function for piping
 			//we will do this in a while loop, continually checking for the next instance of a pipe
 			//pipe(char* file1, char** args1, char* file2, char** args2)
-
+			if(myFlags.pipe == 1){
+				printf("Pipes: %d\n", myFlags.pipe);
+			}
+			//REDIRECTION
 			//if it is a '>' we will execute a function for redirection
-			//redirect(char* file1, char* file2, char dir) *dir stands for the direction
-
+			//redirect(char* file1, char* file2, char dir), where dir stands for the direction
+			if(myFlags.out == 1 || myFlags.in == 1){
+				printf("Out: %d\n", myFlags.out);
+				printf("In: %d\n", myFlags.in);
+			}
 			//if special character is a & we will run programExec without waitPid flag (to be added)
+			if(myFlags.amp == 1){
+				printf("Ampersand: %d\n", myFlags.amp);
+			}
 //			printf("From Main: %s, %s\n", arr[0], arr[1]);
-			programExec(arr[0], arr);
+
+//			programExec(arr[0], arr);
 		}
 
 		free(arr);

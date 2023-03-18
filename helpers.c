@@ -38,11 +38,41 @@ char** parse(char* line,char* delim){
 
         return array;
 }
+/* Takes in arguments, determines if there are any special characters,
+ * returns which one is encountered, if any, or 0 if none
+ */
+void which_special(char* args[], flags *myFlags){
+        int out = find_special(args,">");
+        int in = find_special(args,"<");
+        int pipe = find_special(args, "|");
+        int amp = find_special(args, "&");
+
+        if(out != -1){
+//                printf("Out: %s, ", args[out]);
+                myFlags->out = 1;
+        }
+        if(in != -1){
+//                printf("In: %s\n", args[in]);
+                myFlags->in = 1;
+        }
+        if(pipe != -1){
+//                printf("Pipe: %s, ", args[pipe]);
+                myFlags->pipe = 1;
+        }
+
+        if(amp != -1){
+//                printf("Amp: %s, ", args[amp]);
+                myFlags->amp = 1;
+        }
+        //otherwise return -1
+
+}
 /*Returns index of first instance of char* special*/
 int find_special (char*args[], char * special){
 
         int i = 0;
         while(args[i]!=NULL){
+//                printf("\'%s\', \'%s\'\n", args[i], special);
                 if(strcmp(args[i],special)==0){
                         return i;
                 }

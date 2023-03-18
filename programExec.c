@@ -7,7 +7,19 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include "helpers.h"
-
+/* This program allows us to execute a path with arguments passed from main.
+ * We first implemented the functionality to run full paths, determining their
+ * validity by checking for paths that start with '/', which would imply an
+ * absolute path. This is done by forking and executing the given aboslute path.
+ *
+ * Further, we decided to implement functionality to run common
+ * commands from the PATH environment variable directories. This could be
+ * implemented using the execvp function, but since we are limited to using
+ * other exec functions, we must rely on obtaining the directories in the
+ * PATH variable using getenv(), then parsing the string of colon seperated
+ * values. We then check each directory for the given function, and if found
+ * run the first instance found. 
+ */
 int programExec(char* path, char* args[]){
     char envPath[4096];
     int status = 0;
