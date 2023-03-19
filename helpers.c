@@ -66,6 +66,21 @@ void which_special(char* args[], flags *myFlags){
         //otherwise return -1
 
 }
+
+//=========================================================Check
+void check(flags* myFlags){
+//	check for pipes and redirect
+        if( (myFlags-> out && myFlags->pipe) || (myFlags->in && myFlags->pipe) ){
+                puts("Cannot implement pipes and redirection");
+                exit(1);
+        }
+//	Should we check for background and redirect
+//	if( (myFlags->out && myFlags->amp) || (myFlags->in && myFlags->amp) ){
+//		puts("Cannot implement pipes and redirection");
+//		exit(1);
+//	}
+
+}
 /*Returns index of first instance of char* special*/
 int find_special (char*args[], char * special){
 

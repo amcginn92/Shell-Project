@@ -23,4 +23,5 @@ int myPipe(char* file1, char** args1, char* file2, char** args2);
 int redirect(char* path, char* argv[], int inFile, int outFile);
 void which_special(char* args[], flags *myFlags);
 char** parseRedirect(char* argv[], int inFile, int outFile);
+void check(flags* myFlags);
 #endif

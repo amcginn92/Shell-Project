@@ -13,12 +13,13 @@ void check(flags* myFlags);
 //==================================
 int main(int argc, char* argv[]){
 	char cwd[4096];	//used to display cwd to user in prompt
-	char _line[1024]; //Input from user
+//	char _line[1024]; // input from user
+	char* _line = malloc(128 * sizeof(char*));
 	char** arr = NULL;	//parsed input values separated into strings
 	char* line = NULL;
 	flags myFlags = {0};
 	int exitFlag = 0;
-
+	size_t size = 1024;
 	//continue taking input from user until exit is given
 
 	FILE* fp = getInput(argc, argv);	//batch mode
@@ -30,9 +31,10 @@ int main(int argc, char* argv[]){
 		myFlags.in = 0; myFlags.out = 0; myFlags.amp = 0; myFlags.pipe = 0;	//HAVE TO RESET VALUES FOR EACH LOOP
 		printf("myshell-client:~%s>", getcwd(cwd, 4096));	//would be cool if we had cwd here
 
-		fgets(_line,1024, fp);
-
+		getline(&_line,&size, fp);
+//		fgets(_line,1024, fp);
 		line = strdup(_line);
+
 		//use 'parse' function given to use to parse the user input
 		arr = parse(line," \n");
 
@@ -47,15 +49,29 @@ int main(int argc, char* argv[]){
 		//**NEED TO VERIFY CORRECT NUMBER OF ARGUMENTS FOR BUILT INS**
 		if( (exitFlag = runBuiltIn(arr, i))){
 			if(exitFlag == 42){
-//				printf("More tests\n");
+				puts("");
 				exit(0);
 			}
 			//before we execute the program we need to determine if there is a special character
 			//using 'find_special' we can get the first index of a special character
 
-//			Determine which special chars we have, if any
+//			Determine which special chars we have, if any (helpers.c)
 			which_special(arr, &myFlags);
 			check(&myFlags);
+
+
+			//REDIRECTION
+			//if it is a '>' we will execute a function for redirection
+			//redirect(char* file1, char* file2, char dir), where dir stands for the direction
+			if(myFlags.out != 0 || myFlags.in != 0){	//if we have redirection somewhere
+				//the arguments for input and output are after the indices we saved for the redirection operators
+//				puts("Redirect");
+				redirect(arr[0], arr, myFlags.in, myFlags.out);
+			}else{
+//				puts("ProgramExec");
+				programExec(arr[0], arr);
+			}
+
 
 			//PIPES
 			//if it is a '|' we will execute a function for piping
@@ -64,15 +80,8 @@ int main(int argc, char* argv[]){
 			if(myFlags.pipe == 1){
 //				printf("Pipes: %d\n", myFlags.pipe);
 			}
-			//REDIRECTION
-			//if it is a '>' we will execute a function for redirection
-			//redirect(char* file1, char* file2, char dir), where dir stands for the direction
-			if(myFlags.out != 0 || myFlags.in != 0){	//if we have redirection somewhere
-				//the arguments for input and output are after the indices we saved for the redirection operators
-				redirect(arr[0], arr, myFlags.in, myFlags.out);
-			}else{
-				programExec(arr[0], arr);
-			}
+
+			//BACKGROUND PROCESSES
 			//if special character is a & we will run programExec without waitPid flag (to be added)
 			if(myFlags.amp == 1){
 				printf("Ampersand: %d\n", myFlags.amp);
@@ -156,19 +165,5 @@ int wait(){
 	return(0);
 }
 
-//=========================================================Check
-void check(flags* myFlags){
-//	check for pipes and redirect
-	if( (myFlags-> out && myFlags->pipe) || (myFlags->in && myFlags->pipe) ){
-		puts("Cannot implement pipes and redirection");
-		exit(1);
-	}
-//	Should we check for background and redirect
-//	if( (myFlags->out && myFlags->amp) || (myFlags->in && myFlags->amp) ){
-//		puts("Cannot implement pipes and redirection");
-//		exit(1);
-//	}
-
-}
 
 

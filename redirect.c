@@ -115,7 +115,7 @@ int redirect(char* path, char* argv[], int inFile, int outFile){
         waitpid(pid, &status, 0);
     }
 
-    puts("Finished");
+//    puts("Finished");
     return(0);
 }
 /* Return a new array that contains the process and all of
