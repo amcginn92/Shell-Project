@@ -4,8 +4,9 @@
 int main(){
 	size_t len = 1024;
 	char* arr;
-	malloc(len);
+	arr = malloc(len);
 
 	getline(&arr, &len, stdin);
 	printf("%s", arr);
+	free(arr);
 }

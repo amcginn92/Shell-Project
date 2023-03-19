@@ -22,7 +22,6 @@ char** parse(char* line,char* delim){
                 char**temp = realloc(array,(n+2)*sizeof(char*));
 
                 if(temp==NULL){
-                        printf("Temp: %s\n", *temp);
                         free(array);
                         array=NULL;
                         return array;
@@ -49,11 +48,11 @@ void which_special(char* args[], flags *myFlags){
 
         if(out != -1){
 //                printf("Out: %s, ", args[out]);
-                myFlags->out = 1;
+                myFlags->out = out;
         }
         if(in != -1){
 //                printf("In: %s\n", args[in]);
-                myFlags->in = 1;
+                myFlags->in = in;
         }
         if(pipe != -1){
 //                printf("Pipe: %s, ", args[pipe]);

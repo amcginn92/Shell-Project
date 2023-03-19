@@ -20,6 +20,7 @@ void helpPwd();
 void helpCd();
 int programExec(char* path, char* argv[]);
 int myPipe(char* file1, char** args1, char* file2, char** args2);
-int redirect(char* file1, char* file2, char dir);
+int redirect(char* path, char* argv[], int inFile, int outFile);
 void which_special(char* args[], flags *myFlags);
+char** parseRedirect(char* argv[], int inFile, int outFile);
 #endif
