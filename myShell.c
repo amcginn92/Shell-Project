@@ -97,19 +97,23 @@ int main(int argc, char* argv[]){
 				//the arguments for input and output are after the indices we saved for the redirection operators
 //				puts("Redirect");
 				redirect(arr[0], arr, myFlags.in, myFlags.out);
-			}else{
+			}
+			//PIPES
+			//if it is a '|' we will execute a function for piping
+			else if(myFlags.pipe == 1){
+//				printf("Pipes: %d\n", myFlags.pipe);
+
+				//we will do this in a while loop, continually checking for the next instance of a pipe
+				myPipe(arr);
+			}
+			//Execute program, Check path variables
+			else{
 //				puts("ProgramExec");
 				programExec(arr[0], arr);
 			}
 
 
-			//PIPES
-			//if it is a '|' we will execute a function for piping
-			//we will do this in a while loop, continually checking for the next instance of a pipe
-			//pipe(char* file1, char** args1, char* file2, char** args2)
-			if(myFlags.pipe == 1){
-//				printf("Pipes: %d\n", myFlags.pipe);
-			}
+
 
 			//BACKGROUND PROCESSES
 			//if special character is a & we will run programExec without waitPid flag (to be added)

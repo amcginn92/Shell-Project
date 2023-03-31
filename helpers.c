@@ -119,4 +119,18 @@ FILE *getInput(int argc, char* argv[]){
         }
         return mainFileStream;
 }
+//returns the number of pipes given, up to 512 as was discussed in lab
+int pipeCount(char* argv[]){
+        int i = 0;
+        int pCount = 0;
+        //count the number of pipes
+        while(argv[i] != NULL){
+                //strcmp returns 0 if equal, so we take the opposite
+                if(!strcmp(argv[i],"|")){
+                        pCount++;
+                }
+                i++;
+        }
+        return pCount;
+}
 
