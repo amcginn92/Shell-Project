@@ -1,3 +1,27 @@
+<font size="10">Design Plan</font>  
+- I've decided to split my program into a few key components. The shell will launch and dispatch  
+from the **_myShell.c_** file. This file will determine whether we run in batch/interactive mode,  
+start taking input from the user, parse the input, determine if we have redirection or pipes  
+to handle, and check if invalid (pipe and redirect) input is given. 
+
+- Parsing, determining if there are special characters, and whether they are valid is handled in  
+with functions from the **_helpers.c_** file.
+
+- I have decided to implement redirection and pipes each in their own file,  
+which might have been better off being broken up in the case of redirection, as it started to  
+feel a bit bloated. 
+
+- Redirection was handled in the **_redirect.c_** file. We are given the positions of the input  
+and output redirection operators, as well as everything else entered at the command line. We began  
+by creating a new array of strings pertaining to the command line input, without the redirection  
+operators. In hindsight this could have been done by just adding a null character to the first  
+occurrence of a redirection operator, but since it was already created, I decided to keep it  
+just in case we needed the original string  for something later. All of this was done inside of  
+a function we included in the redirect.c file called 'parseRedirect'. From there we opened the  
+existing files (if necessary), forked/executed our process, and rerouted stdin/out to the correct  
+file descriptor positions.
+
+
 <font size="10">Testing</font>  
 Some of the paths inside of the PATH environment variable did not actually exist. After  
 some research, we found that the values inside of the PATH variable are easily changed.  

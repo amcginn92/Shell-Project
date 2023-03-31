@@ -18,20 +18,21 @@ void check(flags* myFlags);
  */
 
 /*
- * dir
-pwd
-ls | wc
-ls > file
-echo "file"
-wc < file
+//=============TEST CASES
+  * dir (good)
+  * pwd (good)
+  * ls | wc
+  * ls > file (good)
+  * echo "file"
+  * wc < file
 
-ls | grep shell
-ls | grep shell | wc
-ls | grep shell | sleep 5 &
-sleep 5 &
-sleep 2
-
-exit
+  * ls | grep shell
+  * ls | grep shell | wc
+  * ls | grep shell | sleep 5 &
+  * sleep 5 &
+  * sleep 2
+  * exit
+ *
  * LEFT OFF: Need to do a fresh install to ensure programExec.c is working
  *
  */
@@ -44,6 +45,7 @@ int main(int argc, char* argv[]){
 	flags myFlags = {0};
 	int exitFlag = 0;
 	size_t size = 1024;
+	int i = 0; //gets count of command line arguments
 	//continue taking input from user until exit is given
 
 	FILE* fp = getInput(argc, argv);	//batch mode
@@ -61,7 +63,7 @@ int main(int argc, char* argv[]){
 			perror("Getline failed in myShell.c");
 			exit(0);
 		}
-//		fgets(_line,1024, fp);
+//			fgets(_line,1024, fp);	//was using fgets before batch mode *holding onto just to be safe*
 		line = strdup(_line);
 
 		//use 'parse' function given to use to parse the user input
@@ -71,12 +73,11 @@ int main(int argc, char* argv[]){
 			exit(1);
 		}
 		//get a count of arguments
-		int i = 0;
 		while (arr[i]!=NULL){ i++; }
 
 		//determine if built-in, if yes run it, if not (returns 1) we exec the program
 		//**NEED TO VERIFY CORRECT NUMBER OF ARGUMENTS FOR BUILT INS**
-		if( (exitFlag = runBuiltIn(arr, i))){
+		if( (exitFlag = runBuiltIn(arr, i))){	//runBuiltIn returns 42 if 'exit' command was given
 			if(exitFlag == 42){
 				puts("");
 				exit(0);

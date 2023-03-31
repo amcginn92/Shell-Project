@@ -7,6 +7,16 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 #include "helpers.h"
+//Input:
+// Path - Current process to be executed path
+// Argv - the string array obtained from command line
+// InFile - The location of the '<' operator in our argv array
+// OutFile - Same as infile with '>'
+
+//Output: Runs the desired process with given arguments, redirecting
+//standard input/output as requested
+
+
 /* Redirect allows us to provide alternate input/output for a
  * program to be executed. We take in the program to be executed,
  * program arguments, and if there were redirection operators, our
@@ -15,15 +25,6 @@
  * open the files given after the operator, and then replace the STDIN/STDOUT
  * with the given files in the forked child program we execute.
  */
-
-
-/*
- *  LEFT OFF WITH PROBLEM OF NOT 'SOMETHING' PROGRAM TAKING INPUT WHEN REDIRECTION OUTPUT
- *  USING SOMETHING WITH ARGS > OUT.TXT
- */
-
-
-
 int redirect(char* path, char* argv[], int inFile, int outFile){
     int fd1 = 0, fd2 = 0;
     struct stat st1, st2;
