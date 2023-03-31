@@ -39,9 +39,9 @@ int redirect(char* path, char* argv[], int inFile, int outFile){
     if(inFile != 0){
         inFile++;   //the file to be redirected to is following the redirection operators
 
-        if( (stat(argv[inFile], &st1)) == -1){
+        if( (stat(argv[inFile], &st1)) == -1){  //input must exist
             perror("Stat inFile: ");
-            exit(1);
+            exit(1);    //don't want to return
         }
         if(!S_ISREG(st1.st_mode)){
             puts("inFile is not a regular file (redirect.c)");
@@ -57,14 +57,14 @@ int redirect(char* path, char* argv[], int inFile, int outFile){
     if(outFile != 0){
         outFile++;
 
-        if( (stat(argv[outFile], &st2)) == -1){
-            perror("Stat outFile: ");
-            exit(1);
+        if( (stat(argv[outFile], &st2)) == -1){ //output doens't have to exist yet (i.e. ls > out.txt, we want to create file)
+//            perror("Stat outFile: ");
+//            exit(1);
         }
-        if(!S_ISREG(st2.st_mode)){
-            puts("outFile is not a regular file (redirect.c)");
+        if(!S_ISREG(st2.st_mode)){  // not needed anymore
+//            puts("outFile is not a regular file (redirect.c)");
         }
-        if((fd2 = open(argv[outFile], O_WRONLY | O_TRUNC)) == -1){
+        if((fd2 = open(argv[outFile], O_CREAT | O_WRONLY | O_TRUNC, S_IRWXO | S_IRWXG | S_IRWXU)) == -1){
             perror("Open inFile:");
             exit(1);
         }

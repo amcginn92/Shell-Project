@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <errno.h>
 #include "helpers.h"
 //====================================Prototypes
 void help(char** arr, int i);
@@ -11,9 +12,32 @@ void pwd();
 int wait();
 void check(flags* myFlags);
 //==================================
+
+/* //
+ * NEEDS PROGRAM DESCRIPTION
+ */
+
+/*
+ * dir
+pwd
+ls | wc
+ls > file
+echo "file"
+wc < file
+
+ls | grep shell
+ls | grep shell | wc
+ls | grep shell | sleep 5 &
+sleep 5 &
+sleep 2
+
+exit
+ * LEFT OFF: Need to do a fresh install to ensure programExec.c is working
+ *
+ */
 int main(int argc, char* argv[]){
 	char cwd[4096];	//used to display cwd to user in prompt
-//	char _line[1024]; // input from user
+//	char _line[1024]; // input from user //** IF INPUT IS FAILING CHECK GETLINE **
 	char* _line = malloc(128 * sizeof(char*));
 	char** arr = NULL;	//parsed input values separated into strings
 	char* line = NULL;
@@ -29,9 +53,14 @@ int main(int argc, char* argv[]){
 
 	while(1){
 		myFlags.in = 0; myFlags.out = 0; myFlags.amp = 0; myFlags.pipe = 0;	//HAVE TO RESET VALUES FOR EACH LOOP
-		printf("myshell-client:~%s>", getcwd(cwd, 4096));	//would be cool if we had cwd here
+		if(argc == 1){
+			printf("myshell-client:~%s>", getcwd(cwd, 4096));	//would be cool if we had cwd here
+		}
 
-		getline(&_line,&size, fp);
+		if( (getline(&_line,&size, fp)) == -1){
+			perror("Getline failed in myShell.c");
+			exit(0);
+		}
 //		fgets(_line,1024, fp);
 		line = strdup(_line);
 
@@ -144,7 +173,7 @@ void pwd(){
 //====================================================CD
 int cd(char** arr, int i){
 	if(i == 1){
-		return(0);	//cd was only argument, do nothing
+		return(0);	
 	}
 	char cwd[1024];
 	getcwd(cwd, 1024);
