@@ -1,6 +1,6 @@
 #define LINE_MAX 4096 
-#ifndef MAKEFILE_MYPS_H
-#define MAKEFILE_MYPS_H
+#ifndef MAKEFILE_MYSHELL_H
+#define MAKEFILE_MYSHELL_H
 
 typedef struct{
     int in;

@@ -29,7 +29,7 @@ int programExec(char* path, char* args[]){
     struct dirent **namelist;   //Used to check each PATH directory
     int n;  //number of files inside directories
 
-//    printf("%s, %s\n", path, args[1]);
+    printf("Program Exec Test: %s, %s\n", path, args[1]);
 
     //first word is program name, rest are args
     //assume first word to be full path to the program ** at first**

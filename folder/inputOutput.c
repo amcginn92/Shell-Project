@@ -6,7 +6,9 @@ int main(){
 	char* arr;
 	arr = malloc(len);
 
-	getline(&arr, &len, stdin);
-	printf("%s", arr);
+	while(getline(&arr, &len, stdin) != -1){
+		printf("%s", arr);
+	}
+
 	free(arr);
 }

@@ -54,6 +54,7 @@ int main(int argc, char* argv[]){
 
 
 	while(1){
+		printf("How did I end up here? Pid: %u\n", getpid());
 		myFlags.in = 0; myFlags.out = 0; myFlags.amp = 0; myFlags.pipe = 0;	//HAVE TO RESET VALUES FOR EACH LOOP
 		if(argc == 1){
 			printf("myshell-client:~%s>", getcwd(cwd, 4096));	//would be cool if we had cwd here
@@ -125,8 +126,8 @@ int main(int argc, char* argv[]){
 
 		}
 
-		free(arr);
-		free(line);
+//		free(arr);	//why is this crashing!!!
+//		free(_line);
 	}
 	return 0;
 }

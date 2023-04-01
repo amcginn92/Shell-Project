@@ -1,1 +1,26 @@
-no
+ls, (null)
+batch.bat
+folder
+help.c
+helpers.c
+helpers.h
+helpers.o
+help.o
+in.txt
+io
+makefile
+myPipe.c
+myPipe.o
+myShell
+myShell.c
+myShell.o
+out.txt
+pargs
+Picture1.jpg
+Picture2.jpg
+printArgs
+programExec.c
+programExec.o
+README.md
+redirect.c
+redirect.o
