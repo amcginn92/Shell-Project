@@ -23,15 +23,31 @@ int myPipe(char* argv[]){
     int totFds = (2 * pipes);
     int fds[1024];
     int status = 0;
-    int arr[1024];
+    int arr[1024];  //array of pids
 
-//    int k = 0;
-//    while(argv[k] != NULL){
-//        printf("%s ", argv[k]);
-//        k++;
-//    }
-//    puts("");
 
+    //====================background for pipes
+    int bgIndex = 0;
+    int bgRun = 0;
+    int k = 0;
+    while(argv[k] != NULL){
+        k++;
+    }
+    //k has the location of NULL
+
+//    printf("Program Exec Test: %s, %s\n", path, argv[1]);
+
+    if( (bgIndex = find_special(argv, "&")) != -1){ //we have a bg character
+        if(bgIndex +1 != k){    //bg has the index of &, so null MUST be next
+            printf("Background character must be the last!!");
+            exit(1);
+        }else{  //if & is last character, we set a bool for runnign bg process
+            bgRun = 1;
+//            printf("%s\n", argv[bgIndex]);
+            argv[bgIndex] = NULL;
+        }
+    }
+//    printf("bgIndex: %d, Null position: %d, bgRun: %d\n", bgIndex, k, bgRun);
 
 
     //create an array of n-1 pipes
@@ -148,10 +164,24 @@ int myPipe(char* argv[]){
 
 
 
+    else if(pid > 0){  //it's the parent
+        //wait for child to  complete
+        if(bgRun == 0){ //we don't have a background character
+            for(int i = 0; i < processCount; i++){
+                if( (waitpid(arr[i],&status,0)) == -1){
+                    perror("wait pid for background processes in myPipe.c");
+                    exit(1);
+                }
+            }
+            }else{  //we have a background process
+                if( (waitpid(arr[cur], &status, WNOHANG)) == -1){   //we wait for the last process, which is the only one that can run in bg
+                    perror("waitpid WNOHANG in myPipes.c");
+                    exit(1);
+                }
+            }
+        }
+        //otherwise we have a bg process and won't wait
 
-    for(int i = 0; i < processCount; i++){
-        waitpid(arr[i],&status,0);
-    }
 
 //    printf("Parent: %d, Finished Waiting\n", getpid());
 

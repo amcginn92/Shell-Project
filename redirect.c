@@ -34,6 +34,27 @@ int redirect(char* path, char* argv[], int inFile, int outFile){
 //    printf("Redirect main: pArgv[last] = \"%s\" (last is outfile - 1)\nNull Check for end = %s\n", pArgv[outFile - 1], pArgv[outFile]);
 //    printf("Redirect main: argv[out] \'%s\'\n", argv[outFile]);
 
+    //====================background for pipes
+    int bgIndex = 0;
+    int bgRun = 0;
+    int k = 0;
+    while(argv[k] != NULL){
+        k++;
+    }
+    //k has the location of NULL
+
+//    printf("Program Exec Test: %s, %s\n", path, argv[1]);
+
+    if( (bgIndex = find_special(argv, "&")) != -1){ //we have a bg character
+        if(bgIndex +1 != k){    //bg has the index of &, so null MUST be next
+            printf("Background character must be the last!!");
+            exit(1);
+        }else{  //if & is last character, we set a bool for runnign bg process
+            bgRun = 1;
+            printf("%s\n", argv[bgIndex]);
+            argv[bgIndex] = NULL;
+        }
+    }
 
 
 
@@ -110,11 +131,27 @@ int redirect(char* path, char* argv[], int inFile, int outFile){
         exit(0);
 
 
-    }else if(pid > 0){
-//        puts("Parent test!\n");
-        int status = 0;
-        waitpid(pid, &status, 0);
     }
+
+
+    else if(pid > 0){  //it's the parent
+        //wait for child to  complete
+        if(bgRun == 0){ //we don't have a background character
+                if( (waitpid(pid,NULL,0)) == -1){
+                    perror("wait pid for background processes in myPipe.c");
+                    exit(1);
+                }
+        }else{  //we have a background process
+            if( (waitpid(pid, NULL, WNOHANG)) == -1){   //we wait for the last process, which is the only one that can run in bg
+                perror("waitpid WNOHANG in myPipes.c");
+                exit(1);
+            }
+        }
+    }
+
+
+
+
 
 //    puts("Finished");
     return(0);

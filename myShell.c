@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/wait.h>
+#include <sys/types.h>
 #include "helpers.h"
 //====================================Prototypes
 void help(char** arr, int i);
@@ -10,6 +12,7 @@ int runBuiltIn(char** arr, int i);
 int cd(char** arr, int i);
 void pwd();
 int wait();
+int myWait();
 void check(flags* myFlags);
 //==================================
 
@@ -43,10 +46,10 @@ int main(int argc, char* argv[]){
 //	char _line[1024]; // input from user //** IF INPUT IS FAILING CHECK GETLINE **
 	char* _line = malloc(128 * sizeof(char*));
 	char** arr = NULL;	//parsed input values separated into strings
-//	char* line = NULL;
 	flags myFlags = {0};
 	int exitFlag = 0;
 	size_t size = 1024;
+	int status = 0;
 	int i = 0; //gets count of command line arguments
 	//continue taking input from user until exit is given
 
@@ -124,15 +127,19 @@ int main(int argc, char* argv[]){
 
 			//BACKGROUND PROCESSES
 			//if special character is a & we will run programExec without waitPid flag (to be added)
-			if(myFlags.amp == 1){
-				printf("Ampersand: %d\n", myFlags.amp);
+			if(myFlags.amp == 1){	//ended up not using this
+//				printf("Ampersand: %d\n", myFlags.amp);
 			}
 //			printf("From Main: %s, %s\n", arr[0], arr[1]);
 
 
 		}
 
-//		free(arr);
+		waitpid(-1, &status, WNOHANG);
+//		while( (wait(&status)) > 0);
+
+
+//		free(arr);	//can't free here
 //		free(_line);
 	}
 	return 0;
@@ -155,7 +162,8 @@ int runBuiltIn(char** arr, int i){
 		cd(arr, i);
 		return(0);
 	}else if(strcmp(arr[0], "wait") == 0){
-		puts("You're gonna be waiting a long time for that one..");
+		myWait();
+//		puts("You're gonna be waiting a long time for that one..");
 		return(0);
 	}
 	return(1);
@@ -173,8 +181,8 @@ void help(char** arr, int i){
 	}else if(strcmp(arr[1], "cd") == 0){
 		helpCd();
 	}else if(strcmp(arr[1], "wait") == 0){
-		puts("Not just yet..");
-		//implement helpWait()
+//		puts("Not just yet..");
+		myWait();
 	}
 }
 //====================================================PWD
@@ -200,9 +208,13 @@ int cd(char** arr, int i){
 
 }
 //==========================================================Wait
-int wait(){
+int myWait(){
+
 	//waits until all processes have finished if 'wait' has been entered
 	//use a while loop, reading return values for wait
+
+	while(waitpid(-1,NULL,0) > 0);
+
 	return(0);
 }
 

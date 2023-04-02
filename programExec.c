@@ -30,12 +30,25 @@ int programExec(char* path, char* argv[]){
     char* token, *cont; //used to parse the PATH env variable
     struct dirent **namelist;   //Used to check each PATH directory
     int n;  //number of files inside directories
-
+    int bgIndex = 0;
+    int bgRun = 0;
+    int k = 0;
+    while(argv[k] != NULL){
+        k++;
+    }
+    //k has the location of NULL
 
 //    printf("Program Exec Test: %s, %s\n", path, argv[1]);
-
-
-
+    if( (bgIndex = find_special(argv, "&")) != -1){ //we have a bg character
+        if(bgIndex +1 != k){    //bg has the index of &, so null MUST be next
+            printf("Background character must be the last!!");
+            exit(1);
+        }else{  //if & is last character, we set a bool for runnign bg process
+            bgRun = 1;
+            printf("%s\n", argv[bgIndex]);
+            argv[bgIndex] = NULL;
+        }
+    }
 
     //first word is program name, rest are argv
     //assume first word to be full path to the program ** at first**
@@ -103,7 +116,16 @@ int programExec(char* path, char* argv[]){
         }
     }else if(pid > 0){  //it's the parent
         //wait for child to  complete
-        waitpid(pid, &status, 0);
+        if(bgRun == 0){ //we don't have a background character
+            if( (waitpid(pid, &status, 0)) == -1){
+                perror("Waitpid in programExec");
+                exit(1);
+            }else{
+                waitpid(pid, &status, WNOHANG);
+            }
+        }
+        //otherwise we have a bg process and won't wait
+
         }else{
             perror("This is why you should never fork a child(programExec.c)");
             exit(1);
