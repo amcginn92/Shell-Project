@@ -25,4 +25,5 @@ int redirect(char* path, char* argv[], int inFile, int outFile);
 void which_special(char* args[], flags *myFlags);
 char** parseRedirect(char* argv[], int inFile, int outFile);
 void check(flags* myFlags);
+int pExec(char* path, char* argv[]);
 #endif

@@ -32,6 +32,8 @@ void check(flags* myFlags);
   * sleep 5 &
   * sleep 2
   * exit
+
+
  *
  * LEFT OFF: Need to do a fresh install to ensure programExec.c is working
  *
@@ -41,7 +43,7 @@ int main(int argc, char* argv[]){
 //	char _line[1024]; // input from user //** IF INPUT IS FAILING CHECK GETLINE **
 	char* _line = malloc(128 * sizeof(char*));
 	char** arr = NULL;	//parsed input values separated into strings
-	char* line = NULL;
+//	char* line = NULL;
 	flags myFlags = {0};
 	int exitFlag = 0;
 	size_t size = 1024;
@@ -54,21 +56,23 @@ int main(int argc, char* argv[]){
 
 
 	while(1){
-		printf("How did I end up here? Pid: %u\n", getpid());
+//		printf("How did I end up here? Pid: %u\n", getpid());
 		myFlags.in = 0; myFlags.out = 0; myFlags.amp = 0; myFlags.pipe = 0;	//HAVE TO RESET VALUES FOR EACH LOOP
 		if(argc == 1){
 			printf("myshell-client:~%s>", getcwd(cwd, 4096));	//would be cool if we had cwd here
 		}
 
+
+//		printf("PID: %d\n\n", getpid());
 		if( (getline(&_line,&size, fp)) == -1){
 			perror("Getline failed in myShell.c");
 			exit(0);
 		}
 //			fgets(_line,1024, fp);	//was using fgets before batch mode *holding onto just to be safe*
-		line = strdup(_line);
+//		line = strdup(_line);
 
 		//use 'parse' function given to use to parse the user input
-		arr = parse(line," \n");
+		arr = parse(_line," \n");
 
 		if (arr==NULL){
 			exit(1);
@@ -89,6 +93,8 @@ int main(int argc, char* argv[]){
 //			Determine which special chars we have, if any (helpers.c)
 			which_special(arr, &myFlags);
 			check(&myFlags);
+
+
 
 
 			//REDIRECTION
@@ -126,7 +132,7 @@ int main(int argc, char* argv[]){
 
 		}
 
-//		free(arr);	//why is this crashing!!!
+//		free(arr);
 //		free(_line);
 	}
 	return 0;

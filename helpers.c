@@ -86,8 +86,9 @@ int find_special (char*args[], char * special){
 
         int i = 0;
         while(args[i]!=NULL){
-//                printf("\'%s\', \'%s\'\n", args[i], special);
+//                printf("\'%s\'\n", args[i]);
                 if(strcmp(args[i],special)==0){
+//                        printf("Returning: %d", i);
                         return i;
                 }
                 i++;
