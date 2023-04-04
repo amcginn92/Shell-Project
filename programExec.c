@@ -46,7 +46,7 @@ int programExec(char* path, char* argv[]){
             exit(1);
         }else{  //if & is last character, we set a bool for runnign bg process
             bgRun = 1;
-            printf("%s\n", argv[bgIndex]);
+//            printf("%s\n", argv[bgIndex]);
             argv[bgIndex] = NULL;
         }
     }

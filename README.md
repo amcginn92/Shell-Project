@@ -24,6 +24,19 @@ existing files (if necessary), forked/executed our process, and rerouted stdin/o
 file descriptor positions. Of course the execution was done with the programExec function, so we  
 could run standard programs in our PATH.
 
+- Piping was handled in **myPipes.c** file. We count the number of pipes, create a pipe array  
+of this length, and then fork all of our children. From here, the parent close all of its fds,  
+and we implemented logic to have each child redirect their output as necessary. Executing the  
+process with our original programExec function was creating an additional process for each child,  
+so we had to create another program execution function that essentially did the same things  
+without forking. This lead to further divided logic pertaining to background processes. This  
+logic needed to be applied to both redirection and piping functions and was really the most  
+flawed part of the program, albeit functional.
+
+- Background processes, as said previously, have been applied to separate areas of my code,  
+as we got further in the project, this seemed to be the only feasible approach. In hindsight  
+creating a more reusable way of doing this would be beneficial for future changes to the project.  
+
 
 <font size="10">Testing</font>  
 Some of the paths inside of the PATH environment variable did not actually exist. After  
@@ -52,6 +65,17 @@ output, input, or both to/from files.
 The former will take input and provide output with the given files, and printArgs will simply  
 print the arguments from the commandline to the given output file. 'Io' is also able to take    
 input from a file and print to the screen.
+
+Later Stages of testing required a lot more particular test cases. Redirection and piping had  
+had to cause an error if applied in one command. Multiple redirections had to be stopped for  
+both input and output. We had to be sure that background processes were waiting for both pipes  
+and redirected commands. Further, making sure that pipes worked for an indefinite number (up to 512)  
+pipes was a concern and was tested for up to 10 processes with success. Considering the logic was  
+based on the process number in the list, this should work indefinitely. Making sure zombie processes  
+were being reaped routinely throughout the project (1x per command execution) and the wait function was  
+successfully reaping all children was also difficult. Executing commands with the sleep # & call and  
+then running ps -u to see the running programs and those that were reaped seemed to be an efficient way  
+to do this. 
 
 <font size="4">Pseudocode was done throughout the c files in comments. They should have covered  
 the full breadth of the project.</font>  
