@@ -77,5 +77,8 @@ successfully reaping all children was also difficult. Executing commands with th
 then running ps -u to see the running programs and those that were reaped seemed to be an efficient way  
 to do this. 
 
+![Project2Tests](https://user-images.githubusercontent.com/95385730/229667531-20f7a742-0f98-4f18-8348-341f27452cef.JPG)
+
+
 <font size="4">Pseudocode was done throughout the c files in comments. They should have covered  
 the full breadth of the project.</font>  
