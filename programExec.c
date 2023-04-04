@@ -9,23 +9,24 @@
 #include "helpers.h"
 
 
-/* This program allows us to execute a path with arguments passed from main.
- * We first implemented the functionality to run full paths, determining their
- * validity by checking for paths that start with '/', which would imply an
- * absolute path. This is done by forking and executing the given aboslute path.
+/* Input: Program path, Array of strings with program path and arguments
+ * Output: Returns 0 on success
  *
- * Further, we decided to implement functionality to run common
- * commands from the PATH environment variable directories. This could be
- * implemented using the execvp function, but since we are limited to using
- * other exec functions, we must rely on obtaining the directories in the
- * PATH variable using getenv(), then parsing the string of colon seperated
- * values. We then check each directory for the given function, and if found
- * run the first instance found. 
+ * programExec allows us to execute a program that is in one of our PATH
+ * folders. We first attempt to run a program with an absolute/relevant path,
+ * and if this is not the case, we use the PATH environment variable to search
+ * for local programs to run. This of course requires us to parse the string of
+ * colon seperated values. We then check each directory for the given function,
+ * and if found, we run the first instance found. We fork and execute the program
+ * to allow for background processes to run while we continue executing commands
+ * in the shell. This is also implemented in the programExec function, depending
+ * if the array of Strings contains the background character at the end.
  */
 int programExec(char* path, char* argv[]){
     char envPath[4096];
     int status = 0;
     char newPath[4096];
+    newPath[0] = '\0';
     int flag = -1;
     char* token, *cont; //used to parse the PATH env variable
     struct dirent **namelist;   //Used to check each PATH directory
@@ -55,7 +56,12 @@ int programExec(char* path, char* argv[]){
     //** later ** implement simple program names
     pid_t pid;
     //fork a child and get its pid
-    pid = fork();
+    if( (pid = fork()) == -1){
+        perror("This is why you should never fork a child(programExec.c)");
+        exit(1);
+    }
+
+
     //determine if parent or child
     if(pid == 0){    //it's child
         //if it's the child we should execv
@@ -78,18 +84,19 @@ int programExec(char* path, char* argv[]){
                     }
                     while (n--) {
 //                        printf("-%s\n", namelist[n]->d_name);
+                        //if the file we're looking for exists inside a directory
+                        //concatenate the new path  with the file name
                         if(strcmp(path, namelist[n]->d_name) == 0){
                             strcpy(newPath, token);
                             strcat(newPath, "/");
                             strcat(newPath, path);
                         }
-                        free(namelist[n]);
+                        free(namelist[n]);  // must free each array element returned from scandir
                     }
 
                 }
         }
 
-        //**HAVE TO CHECK IF NOTHING WAS FOUND**
 
 
         //we will do this by parsing the environment variable PATH using strtok_r looking for colons
@@ -99,13 +106,17 @@ int programExec(char* path, char* argv[]){
         //We will reuse code from project A to do this
 
 
-
-        if(flag == 1){  //if we do not have an absolute path, use the new constructed path
+        //if we do not have an absolute/relative path, use the new constructed path
+        if(flag == 1 && *newPath == '\0'){
+            printf("%s: Command not found\n", path);
+            return(1);  //return unsuccessful
+        }else if(flag == 1){
             if(execv(newPath, argv) == -1){
                 perror("Execv in programExec.c");
                 exit(1);
             }
-        }else{
+        }
+        else{
 //            puts("Should print this");
             if(execv(path, argv) == -1){
                 perror("Execv in programExec.c");
@@ -120,21 +131,28 @@ int programExec(char* path, char* argv[]){
             if( (waitpid(pid, &status, 0)) == -1){
                 perror("Waitpid in programExec");
                 exit(1);
-            }else{
-                waitpid(pid, &status, WNOHANG);
+            }
+        }else{
+            if( (waitpid(pid, &status, WNOHANG)) == -1){
+                perror("Waitpid in programExec WNOHANG");
+                exit(1);
             }
         }
         //otherwise we have a bg process and won't wait
 
-        }else{
-            perror("This is why you should never fork a child(programExec.c)");
-            exit(1);
         }
 
         return(0);
 }
 
 //==================================================================Exec without forking
+//Input: same as programExec
+//Output: Same as programExec
+//This function only differs from program exec in that it does not fork
+//and execute, and also does not implement its own background processing.
+//This was needed for piping, as processes that are being run
+//have already splintered from their parent and no longer require forking
+//and background processes are handled locally in that function.
 int pExec(char* path, char* argv[]){
     char envPath[4096];
     char newPath[4096];
@@ -143,13 +161,16 @@ int pExec(char* path, char* argv[]){
     struct dirent **namelist;   //Used to check each PATH directory
     int n;  //number of files inside directories
 
-//    printf("Program Exec Test: %s, %s\n", path, argv[1]);
+    //    printf("Program Exec Test: %s, %s\n", path, argv[1]);
 
+
+    //PSEUDOCODE
     //first word is program name, rest are argv
     //assume first word to be full path to the program ** at first**
-        //at first we will just give the full path of the program we want to run
-        //Next we want to make it so it will run programs with simple path
-        //if the path doesn't start with a '/' we search the path variables per instructions
+    //at first we will just give the full path of the program we want to run
+    //Next we want to make it so it will run programs with simple path
+    //if the path doesn't start with a '/' we search the path variables per instructions
+
         if(*path != '/' && *path != '.'){
             flag = 1;
             strcpy(envPath, getenv("PATH"));
@@ -177,18 +198,12 @@ int pExec(char* path, char* argv[]){
         //**HAVE TO CHECK IF NOTHING WAS FOUND**
 
 
+        //PSEUDOCODE
         //we will do this by parsing the environment variable PATH using strtok_r looking for colons
         //The folders we find will each have to be checked for the program we intend to execute
         //if we find the program, we copy out the path leading up to it and use that
         //**WE ONLY DO THIS IF THE PROGRAM IS NOT A SYMLINK OR ABSOLUTE PATH**
         //We will reuse code from project A to do this
-
-//        int i = 0;
-//        puts("Begin");
-//        while(argv[i] != NULL){
-//            printf("%s\n", argv[i]);
-//            i++;
-//        }
 
         if(flag == 1){  //if we do not have an absolute path, use the new constructed path
             if(execv(newPath, argv) == -1){
@@ -203,7 +218,6 @@ int pExec(char* path, char* argv[]){
 
         }
 
-//    free(namelist);	//namelist if allocated via malloc() and must be freed
 
     return(0);
 }

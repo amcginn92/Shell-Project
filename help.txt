@@ -1,0 +1,16 @@
+myShell
+
+This shell implements some features for navigating file systems like pwd, cd, and executes programs.
+It has additional features, such redirecting input and output to files in the current folder, piping
+input and output between multiple processes, and executing files in the local PATH environment. Built
+-in functions are:
+
+* wait - waits for all child processes to finish and reap their zombies
+
+* pwd - prints the current path working directory to screen
+
+* cd - allows you to change to the given directory within your file system
+
+* help - prints this help manual
+
+* exit - exits from the shell

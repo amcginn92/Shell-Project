@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "helpers.h"
+
+//parse returns the array of characters as
+//a 2d array of each word separated by spaces
 char** parse(char* line,char* delim){
 
         char** array=malloc(sizeof(char*));
@@ -35,7 +38,7 @@ char** parse(char* line,char* delim){
 
         }
 
-        return array;
+        return array;   //needs to be freed in main
 }
 /* Takes in arguments, determines if there are any special characters,
  * returns which one is encountered, if any, or 0 if none
@@ -56,29 +59,26 @@ void which_special(char* args[], flags *myFlags){
         }
         if(pipe != -1){
 //                printf("Pipe: %s, ", args[pipe]);
-                myFlags->pipe = 1;
+                myFlags->pipe = pipe;
         }
 
         if(amp != -1){
 //                printf("Amp: %s, ", args[amp]);
-                myFlags->amp = 1;
+                myFlags->amp = amp;
         }
         //otherwise return -1
 
 }
 
 //=========================================================Check
+/* check determines if we have an incorrect input such as output or input
+ * redirection and piping  */
 void check(flags* myFlags){
 //	check for pipes and redirect
         if( (myFlags-> out && myFlags->pipe) || (myFlags->in && myFlags->pipe) ){
                 puts("Cannot implement pipes and redirection");
                 exit(1);
         }
-//	Should we check for background and redirect
-//	if( (myFlags->out && myFlags->amp) || (myFlags->in && myFlags->amp) ){
-//		puts("Cannot implement pipes and redirection");
-//		exit(1);
-//	}
 
 }
 /*Returns index of first instance of char* special*/

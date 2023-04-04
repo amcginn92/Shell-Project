@@ -30,11 +30,12 @@ int redirect(char* path, char* argv[], int inFile, int outFile){
     struct stat st1, st2;
     int saveStdin = 0, saveStdout = 0;
     char** pArgv; //we need to build a new argv without redirection operators etc
-    pArgv = parseRedirect(argv, inFile, outFile);
+    pArgv = parseRedirect(argv, inFile, outFile);//freed
+
 //    printf("Redirect main: pArgv[last] = \"%s\" (last is outfile - 1)\nNull Check for end = %s\n", pArgv[outFile - 1], pArgv[outFile]);
 //    printf("Redirect main: argv[out] \'%s\'\n", argv[outFile]);
 
-    //====================background for pipes
+    //====================background for redirection
     int bgIndex = 0;
     int bgRun = 0;
     int k = 0;
@@ -61,6 +62,11 @@ int redirect(char* path, char* argv[], int inFile, int outFile){
     if(inFile != 0){
         inFile++;   //the file to be redirected to is following the redirection operators
 
+        if( (find_special(&argv[inFile], "<")) != -1){
+            puts("Too many output redirections");
+            exit(1);
+        }
+
         if( (stat(argv[inFile], &st1)) == -1){  //input must exist
             perror("Stat inFile: ");
             exit(1);    //don't want to return
@@ -78,6 +84,10 @@ int redirect(char* path, char* argv[], int inFile, int outFile){
     }
     if(outFile != 0){
         outFile++;
+        if( (find_special(&argv[outFile], ">")) != -1){
+            puts("Too many output redirections");
+            exit(1);
+        }
 
         if( (stat(argv[outFile], &st2)) == -1){ //output doens't have to exist yet (i.e. ls > out.txt, we want to create file)
 //            perror("Stat outFile: ");
@@ -101,19 +111,36 @@ int redirect(char* path, char* argv[], int inFile, int outFile){
 
     pid_t pid;
 
-    pid = fork();
+    if( (pid = fork()) == -1){
+        perror("Fork in redirect.c");
+        exit(1);
+    }
 //    printf("pid: %u\n", pid);
     if(pid == 0){//child
 //        printf("Child test: fd1: %u, fd2: %u\n", fd1, fd2);
         if(fd1 != 0){
             saveStdin = dup(STDIN_FILENO);
-            dup2(fd1,STDIN_FILENO);
-            close(fd1);
+            if( (dup2(fd1,STDIN_FILENO)) == -1){
+                perror("dup2 in redirect.c for fd2 on STDOUT");
+            }
+
+            if( (close(fd1)) == -1){
+                perror("Close in redirect.c (fd1)");
+                exit(1);
+            }
         }
         if(fd2 != 0){
-            saveStdout = dup(STDOUT_FILENO);
-            dup2(fd2,STDOUT_FILENO);
-            close(fd2);
+            if( (saveStdout = dup(STDOUT_FILENO)) == -1){   // save stdout
+                perror("dup2 in redirect.c for fd2 on STDOUT");
+            }
+
+            if( (dup2(fd2,STDOUT_FILENO)) == -1){   //overwrite stdout
+                perror("dup2 in redirect.c for fd2 on STDOUT");
+            }
+            if( (close(fd2)) == -1){    //close the fd
+                perror("Close in redirect.c (fd2)");
+                exit(1);
+            }
         }
 //        printf("in fd: %d\n", fd1);
         if( (programExec(path, pArgv)) == -1){   // use our programExec program to run with PATH programs
@@ -121,12 +148,25 @@ int redirect(char* path, char* argv[], int inFile, int outFile){
             exit(1);
         }
         if(fd1 != 0){
-            dup2(saveStdin, STDIN_FILENO);
-            close(saveStdin);
+
+            if( (dup2(saveStdin, STDIN_FILENO)) == -1){
+                perror("dup2 in redirect.c for fd1 on STDIN");
+                exit(1);
+            }
+            if( (close(saveStdin)) == -1){
+                perror("close in redirect.c for 'saveStdin'");
+                exit(1);
+            }
         }
         if(fd2 != 0){
-            dup2(saveStdout, STDOUT_FILENO);
-            close(saveStdout);
+            if( (dup2(saveStdout, STDOUT_FILENO)) == -1){
+                perror("dup2 in redirect.c for fd2 'saveStdout'");
+                exit(1);
+            }
+            if( (close(saveStdout)) == -1){
+                perror("close in redirect.c for 'saveStdout'");
+                exit(1);
+            }
         }
         exit(0);
 
@@ -152,7 +192,7 @@ int redirect(char* path, char* argv[], int inFile, int outFile){
 
 
 
-
+    free(pArgv);
 //    puts("Finished");
     return(0);
 }
@@ -186,7 +226,5 @@ char** parseRedirect(char* argv[], int inFile, int outFile){
     }
 //    printf("pArgv[last]: %s\n", pArgv[last]);
 
-
-
-    return pArgv;    //just to avoid error ** NEEDS CHANGE, also need to FREE PARGV IN REDIRECT**
+    return pArgv;    //freed in redirect
 }

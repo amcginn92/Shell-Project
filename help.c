@@ -4,6 +4,13 @@
 #include <unistd.h>
 #include "helpers.h"
 
+//DEPRECATED
+
+/* This was implemented because I misunderstood the description of the help
+ * builtin. I created a man page for each builtin function, as this is the
+ * way that help works in the linux shell.
+ */
+
 void helpMan(){
     puts("HELP(1)\n\n");
     puts("NAME");

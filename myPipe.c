@@ -6,14 +6,16 @@
 #include <sys/wait.h>
 
 
-/*
- * Left off: using exit to debug
- * Linux shell interrupting
+/* MYPIPE
+ * Input: Parsed command line
+ * Returns: 0 on success
+ * myPipe handles any command line input that contains a '|'. It takes Each
+ * program (assuming first command and every command following a pipe is a
+ * program) and redirects it's output to the following program. This is done
+ * by forking and overriting the processes standard input and output file des
+ * -criptors. If the commandline has an '&' the parent will return and continue
+ * taking input from the shell.
  */
-
-
-
-
 int myPipe(char* argv[]){
     int pipes = 0;
     int pid = -1;
@@ -83,7 +85,10 @@ int myPipe(char* argv[]){
     //=====================parent closes all fd after forking
     if(pid > 0){
         for(int j = 0; j < pipes * 2; j++){
-            close(fds[j]);   //parent closes every fd
+            if( (close(fds[j])) == -1){
+                perror("close in myPipe.c for fds");
+                exit(1);
+            }   //parent closes every fd
         }
     }
 
@@ -97,15 +102,15 @@ int myPipe(char* argv[]){
 //            printf("Pid: %d, Next: %s, Last: %s\n", getpid(), argv[next], argv[last]);
             if(next == -1){
 //                puts("No more pipes broseph!");
-                break;
+                break;  //we've found our cur program name and arguments
             }
-            argv[next++] = NULL;
+            argv[next++] = NULL;    //null terminate the string
 //            printf("Pid: %d, Next: %d %s, Last: %d %s\n", getpid(), next, argv[next], last, argv[last]);
         }
 //        printf("Pid: %d, Next: %d %s, Last: %d %s\n", getpid(), next, argv[next], last, argv[last]);
     }
-    //last has the address of current process name and the string is null terminated
 
+    //last has the address of current process name and the string is null terminated
     //===================================================  1ST  process only dups stdout
     if(pid == 0 && cur == 0){
 //        printf("I am child %d, running: %s, fd: %d\n", cur, argv[last], 1);
@@ -115,12 +120,15 @@ int myPipe(char* argv[]){
             exit(1);
         }
         for(int j = 0; j < totFds; j++){//we created 2 x pipes fds, goes up until index (2* pipes) - 1
-            close(fds[j]);
+            if( (close(fds[j])) == -1){
+                perror("close in myPipe.c for fds");
+                exit(1);
+            }
         }
         pExec(argv[last], &argv[last]);
 
         //========================================================================  LAST  process only changes stdin
-    }else if(pid == 0 && cur == (processCount - 1)){
+    }else if(pid == 0 && (cur == (processCount - 1)) ){
 //        printf("I am child %d, running: %s, using fd: %d\n", cur, argv[last], (2*cur) - 2);
 //        printf("cur: %d, pid: %d, (2*cur) - 2: %d, fd[(2*cur) - 2]: %d\n", cur, getpid(), (2*cur) - 2, fds[(2*cur) - 2]);
         if((dup2(fds[(2*cur) - 2], STDIN_FILENO)) == -1){   //overwrite stdin with read pipe
@@ -129,7 +137,10 @@ int myPipe(char* argv[]){
         }
         for(int j = 0; j < totFds; j++){//we created 2 x pipes fds, goes up until index (2* pipes) - 1
 //            printf("Closing j: %d\n", j);
-            close(fds[j]);
+            if( (close(fds[j])) == -1){
+                perror("close for fds in myPipe.c");
+                exit(1);
+            }
         }
 
         pExec(argv[last], &argv[last]);
@@ -153,7 +164,10 @@ int myPipe(char* argv[]){
         }
 
         for(int j = 0; j < totFds; j++){//we created 2 x pipes fds, goes up until index (2* pipes) - 1
-            close(fds[j]);   //close everything, we've already duped what we need
+            if( (close(fds[j])) == -1){
+                perror("close for fds in myPipe.c");
+                exit(1);
+            } //close everything, we've already duped what we need
         }
 //        printf("%s, %s\n", argv[last], argv[last + 1]);
         pExec(argv[last], &argv[last]);
@@ -184,9 +198,9 @@ int myPipe(char* argv[]){
 
 
 //    printf("Parent: %d, Finished Waiting\n", getpid());
-
-
 //    printf("%d", fds[0]);
+
+    //Pseudocode
     //fork
     //if child (0), fork again
     //exec process1 from child1
@@ -195,6 +209,6 @@ int myPipe(char* argv[]){
     //if child2 (0), execute process 2
     //cut off write end
     //read
-//    exit(0);
+
     return 0;
 }
