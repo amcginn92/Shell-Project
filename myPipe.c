@@ -188,10 +188,7 @@ int myPipe(char* argv[]){
                 }
             }
             }else{  //we have a background process
-                if( (waitpid(arr[cur], &status, WNOHANG)) == -1){   //we wait for the last process, which is the only one that can run in bg
-                    perror("waitpid WNOHANG in myPipes.c");
-                    exit(1);
-                }
+                waitpid(arr[cur], &status, WNOHANG);
             }
         }
         //otherwise we have a bg process and won't wait
